@@ -10,21 +10,21 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // -----------------------------
-// 1. Database Configuration
+// Database Configuration
 // -----------------------------
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // -----------------------------
-// 2. Dependency Injection (DI)
+// Dependency Injection (DI)
 // -----------------------------
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>(); // Repository
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();       // Service Layer
 builder.Services.AddScoped<JwtService>();                              // JWT Helper Service
 
 // -----------------------------
-// 3. JSON Serializer Options
-//    (Keeps PascalCase in JSON instead of camelCase)
+// JSON Serializer Options
+// (Keeps PascalCase in JSON instead of camelCase)
 // -----------------------------
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -32,7 +32,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 
 // -----------------------------
-// 4. Swagger / OpenAPI Config
+// Swagger / OpenAPI Config
 // -----------------------------
 builder.Services.AddOpenApi();              // Adds minimal OpenAPI support (for .NET 8/9)
 builder.Services.AddEndpointsApiExplorer(); // Required for Swagger UI generation
@@ -69,7 +69,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // -----------------------------
-// 5. JWT Authentication Config
+// JWT Authentication Config
 // -----------------------------
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -89,10 +89,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+// -----------------------------
+// Add CORS Support
+// -----------------------------
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
+
 var app = builder.Build();
 
 // -----------------------------
-// 6. HTTP Pipeline Configuration
+// HTTP Pipeline Configuration
 // -----------------------------
 if (app.Environment.IsDevelopment())
 {
@@ -107,6 +122,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();     // Redirects HTTP requests to HTTPS
+
+app.UseCors("AllowAll");       // Use CORS Middleware in HTTP Pipeline - After app.Build(), before authentication
 
 app.UseAuthentication();       // Enables JWT Authentication middleware
 app.UseAuthorization();        // Enables Role/Policy-based Authorization
