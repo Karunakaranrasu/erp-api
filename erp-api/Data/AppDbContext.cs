@@ -12,6 +12,7 @@ namespace erp_api.Data
 
         public DbSet<Employee> Employees { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Customer> Customers { get; set; }
 
     }
 }

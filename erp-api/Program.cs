@@ -21,6 +21,8 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>(); // Repository
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();       // Service Layer
 builder.Services.AddScoped<JwtService>();                              // JWT Helper Service
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 // -----------------------------
 // JSON Serializer Options
