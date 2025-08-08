@@ -103,6 +103,16 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CustomPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200","http://127.0.0.1:5500")
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 
 var app = builder.Build();
 
@@ -123,7 +133,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();     // Redirects HTTP requests to HTTPS
 
-app.UseCors("AllowAll");       // Use CORS Middleware in HTTP Pipeline - After app.Build(), before authentication
+app.UseCors("CustomPolicy");   // Use CORS Middleware in HTTP Pipeline - After app.Build(), before authentication
 
 app.UseAuthentication();       // Enables JWT Authentication middleware
 app.UseAuthorization();        // Enables Role/Policy-based Authorization
